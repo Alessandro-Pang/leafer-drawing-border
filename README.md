@@ -12,7 +12,7 @@ Vue3 + Vite + Leafer 实现的简易画板
 
 > 不建议阅读代码，为了图省事代码并没有做太多优化，有大量的冗余代码与无用代码。
 
-在线访问地址：[https://alexpang.cn/](https://alexpang.cn/)
+在线访问地址：[https://alexpang.cn/leafer-drawing-border/](https://alexpang.cn/leafer-drawing-border/)
 
 ## Project Setup
 
