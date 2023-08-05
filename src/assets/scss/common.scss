@@ -1,0 +1,80 @@
+$prefix: zy;
+
+// 固定宽高 100 - 1200
+@for $index from 1 to 1200 {
+  .w-#{$index * 100} {
+    width: #{$index * 100}px;
+  }
+
+  .h-#{$index * 100} {
+    width: #{$index * 100}px;
+  }
+}
+
+// 基础 class 样式
+@mixin base-class($key, $num) {
+  .#{$prefix}-col-#{$key} {
+    width: #{$num + '%'};
+  }
+
+  .#{$prefix}-row-#{$key} {
+    height: #{$num + '%'};
+  }
+
+  // width
+  .#{$prefix}-m-#{$key} {
+    margin: #{$num}px;
+  }
+
+  .#{$prefix}-mt-#{$key} {
+    margin-top: #{$num}px;
+  }
+
+  .#{$prefix}-mr-#{$key} {
+    margin-right: #{$num}px;
+  }
+
+  .#{$prefix}-mb-#{$key} {
+    margin-bottom: #{$num}px;
+  }
+
+  .#{$prefix}-ml-#{$key} {
+    margin-left: #{$num}px;
+  }
+
+  // padding
+  .#{$prefix}-p-#{$key} {
+    padding: #{$num}px;
+  }
+
+  .#{$prefix}-pt-#{$key} {
+    padding-top: #{$num}px;
+  }
+
+  .#{$prefix}-pr-#{$key} {
+    padding-right: #{$num}px;
+  }
+
+  .#{$prefix}-pb-#{$key} {
+    padding-bottom: #{$num}px;
+  }
+
+  .#{$prefix}-pl-#{$key} {
+    padding-left: #{$num}px;
+  }
+}
+
+// 百分比 宽高 类
+@for $num from 0 to 100 {
+  @if ($num % 5==0) {
+    @include base-class($num, $num);
+  }
+
+  @else if ($num==33) {
+    @include base-class($num, 33.3333);
+  }
+
+  @else if ($num==66) {
+    @include base-class($num, 66.6666);
+  }
+}
