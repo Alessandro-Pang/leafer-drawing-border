@@ -2,8 +2,8 @@
  * @Author: zi.yang
  * @Date: 2023-07-29 17:08:36
  * @LastEditors: zi.yang
- * @LastEditTime: 2023-08-05 19:39:57
- * @Description: 
+ * @LastEditTime: 2023-08-05 21:21:00
+ * @Description: 节点包装器
  * @FilePath: /vue-project/src/graph/item-wrapper.js
  */
 import { Box, DragEvent, Ellipse, Line, PointerEvent, UI } from 'leafer-ui';
@@ -12,13 +12,16 @@ import { uniqueId } from '../utils';
 import { DEFAULT_OPTION } from './constants';
 import { findInsideNode, getWrapperBox } from './utils';
 
-const toRaw = (val) => Object.prototype.toString.call(val).slice(8, -1).toLowerCase();
-
+/**
+ * 自定义属性
+ * @param {*} props 
+ * @returns 
+ */
 function getDefaultCustomProps(props) {
   return Object.assign({}, {
     _isDrawGraph: true,
     _drawConfig: { type: 'BBox' },
-    _status: {}
+    _status: { isSelected: false }
   }, props)
 }
 
@@ -44,13 +47,14 @@ function setWrapperBoxStyle(wrapperBox, color) {
 }
 
 /**
- * 
+ * 包装器事件
  * @param {*} leafer 
  * @param {*} box 
  */
 function addWrapperEvent(leafer, box) {
   leafer.on(PointerEvent.TAP, () => {
     leafer.children.forEach((leaf) => {
+      leaf._status.isSelected = false;
       setWrapperBoxStyle(leaf, 'transparent')
     })
   })
@@ -59,12 +63,19 @@ function addWrapperEvent(leafer, box) {
     if (!event.target) return;
     const wrapperBox = getWrapperBox(event.target)
     leafer.children.forEach((leaf) => {
+      leaf._status.isSelected = false;
       setWrapperBoxStyle(leaf, 'transparent')
     })
+    wrapperBox._status.isSelected = true;
     setWrapperBoxStyle(wrapperBox, 'blue')
   })
 }
 
+/**
+ * TODO: 拖拽放大缩小功能开发
+ * @param {*} leafer 
+ * @param {*} box 
+ */
 function createResizePoint(leafer, box) {
   const pointPosition = [[0, 0], [1, 1], [0, 1], [1, 0]]
 
@@ -116,7 +127,11 @@ function createResizePoint(leafer, box) {
   })
 }
 
-// 连接锚点
+/**
+ * TODO: 连接锚点 功能开发
+ * @param {*} leafer 
+ * @param {*} box 
+ */
 function createAnchorPoint(leafer, box) {
   const pointPosition = [[0, 0.5], [0.5, 0], [1, 0.5], [0.5, 1]]
 

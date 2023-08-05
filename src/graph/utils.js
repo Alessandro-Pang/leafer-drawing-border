@@ -2,10 +2,19 @@
  * @Author: zi.yang
  * @Date: 2023-08-02 23:23:58
  * @LastEditors: zi.yang
- * @LastEditTime: 2023-08-02 23:24:23
+ * @LastEditTime: 2023-08-05 20:53:09
  * @Description: 
  * @FilePath: /vue-project/src/graph/utils.js
  */
+
+export function toRaw(val) {
+  return Object.prototype.toString.call(val)
+}
+
+export function getType(val) {
+  return toRaw(val).slice(8, -1).toLowerCase();
+}
+
 /**
  * 
  * @param {*} event 
