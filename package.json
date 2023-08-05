@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "flex.css": "^1.1.7",
-    "leafer-tooltip-plugin": "^1.0.3",
-    "leafer-ui": "^1.0.0-beta.7",
+    "leafer-tooltip-plugin": "^1.1.0",
+    "leafer-ui": "^1.0.0-beta.8",
     "milligram": "^1.4.1",
     "normalize.css": "^8.0.1",
     "vue": "^3.3.4"

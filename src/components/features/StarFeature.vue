@@ -2,7 +2,7 @@
  * @Author: zi.yang
  * @Date: 2023-08-05 10:58:38
  * @LastEditors: zi.yang
- * @LastEditTime: 2023-08-05 18:40:51
+ * @LastEditTime: 2023-08-06 00:33:48
  * @Description: 星型
  * @FilePath: /vue-project/src/components/features/StarFeature.vue
 -->
@@ -24,7 +24,7 @@ function setConfig(node) {
   timerId = setTimeout(() => {
     if (!node) return;
     config.points = node.points;
-    config.innerRadius = node.innerRadius;
+    config.innerRadius = node.innerRadius * 100;
     clearTimeout(timerId);
   }, 60);
 }
