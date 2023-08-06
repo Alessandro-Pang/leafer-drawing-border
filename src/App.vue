@@ -2,7 +2,7 @@
  * @Author: zi.yang
  * @Date: 2023-07-04 11:24:27
  * @LastEditors: zi.yang
- * @LastEditTime: 2023-08-05 19:59:44
+ * @LastEditTime: 2023-08-06 23:08:31
  * @Description: 
  * @FilePath: /vue-project/src/App.vue
 -->
@@ -27,14 +27,24 @@ nextTick(() => {
 function handleOpenGitHub(){
   window.open('https://github.com/Alessandro-Pang/leafer-drawing-border')
 }
+
+function handleClickExportImage() {
+  leafer.value.export(`leafer-drawing-${Date.now()}.png`)
+}
 </script>
 
 <template>
   <n-message-provider>
-    <header class="header">Leafer Drawing Board</header>
-    <div class="github-icon" @click="handleOpenGitHub">
-      <img :src="svg('github')" alt="svg">
-    </div>
+    <header class="header" flex="main:justify">
+      <div class="title">Leafer Drawing Board</div>
+      <div flex style="padding-top: 1rem"> 
+        <button class="button-small zy-mr-20" @click="handleClickExportImage">导出图片</button>
+        <div class="github-icon" @click="handleOpenGitHub">
+          <img :src="svg('github')" alt="svg">
+        </div>
+      </div>
+    </header>
+
     <main class="main">
       <item-panel :leafer="leafer"></item-panel>
       <div id="graph-container"></div>
@@ -45,7 +55,7 @@ function handleOpenGitHub(){
   </n-message-provider> 
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .slide-fade-enter-active {
   transition: all 0.3s ease-out;
 }
@@ -65,19 +75,20 @@ function handleOpenGitHub(){
   line-height: 6rem;
   padding-left: 2rem;
   color: #fff;
-  font-size: 3rem;
-  font-weight: 600;
-  overflow: hidden;
-  text-shadow: 0.5rem 0.4rem 0.2rem rgba(0, 0, 0, 0.4);
   background-image: linear-gradient(to right bottom, #72e3fd, #0770f7);
-}
-.github-icon{
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-  width: 4rem;
-  height: 4rem;
-  cursor: pointer;
+
+  .title {
+    font-size: 3rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-shadow: 0.5rem 0.4rem 0.2rem rgba(0, 0, 0, 0.4);
+  }
+
+  .github-icon{
+    width: 4rem;
+    height: 4rem;
+    cursor: pointer;
+  }
 }
 
 .main {
