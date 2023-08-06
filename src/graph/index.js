@@ -2,11 +2,17 @@
  * @Author: zi.yang
  * @Date: 2023-07-06 21:02:27
  * @LastEditors: zi.yang
- * @LastEditTime: 2023-08-05 21:30:54
+ * @LastEditTime: 2023-08-06 14:34:01
  * @Description: 
  * @FilePath: /vue-project/src/graph/index.js
  */
 import { Leafer, LeaferEvent } from 'leafer-ui';
+
+let ctrlDown = false;
+const ctrlKey = 17;
+const cmdKey = 91;
+const vKey = 86;
+const cKey = 67;
 
 const createGraph = (view) => {
   // 实例应用
@@ -30,10 +36,50 @@ const createGraph = (view) => {
       });
     }
   }
-  window.addEventListener('keydown', removeSelectedNode)
-  leafer.on(LeaferEvent.END, () => {
-    window.removeEventListener('keydown', removeSelectedNode)
-  })
+
+  function addCtrlDownListener(event) {
+    if (event.keyCode == ctrlKey || event.keyCode == cmdKey) ctrlDown = true;
+  }
+
+  function removeCtrlDownListener(event) {
+    if (event.keyCode == ctrlKey || event.keyCode == cmdKey) ctrlDown = false;
+  }
+
+  // TODO: copy 功能实现
+  let selectedNodes = null;
+  function copySelectedNode(event) {
+    if (ctrlDown && (event.keyCode == cKey)) {
+      selectedNodes = leafer.children.filter((node) => node?._status?.isSelected);
+    }
+    console.log(selectedNodes);
+    if (ctrlDown && (event.keyCode == vKey)) {
+      if (selectedNodes === null) return
+      selectedNodes.forEach((node) => {
+        leafer.children.push(node)
+      })
+      console.log(leafer.children);
+      selectedNodes = null
+    }
+  }
+  if (leafer.view) {
+    leafer.view.setAttribute('tabindex', 0)
+    leafer.view.style.outline = 0;
+
+    leafer.view.addEventListener('keydown', addCtrlDownListener);
+    leafer.view.addEventListener('keyup', removeCtrlDownListener);
+
+    // 删除事件
+    leafer.view.addEventListener('keydown', removeSelectedNode)
+    // 复制事件
+    // leafer.view.addEventListener('keydown', copySelectedNode);
+
+    leafer.on(LeaferEvent.END, () => {
+      leafer.view.removeEventListener('keydown', removeSelectedNode)
+      // leafer.view.removeEventListener('keydown', copySelectedNode)
+      leafer.view.removeEventListener('keydown', addCtrlDownListener)
+      leafer.view.removeEventListener('keyup', removeCtrlDownListener)
+    })
+  }
 
   return leafer
 }
