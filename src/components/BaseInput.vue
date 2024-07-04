@@ -3,28 +3,28 @@
  * @Date: 2023-08-02 08:23:52
  * @LastEditors: zi.yang
  * @LastEditTime: 2023-08-05 18:46:05
- * @Description: 
+ * @Description:
  * @FilePath: /vue-project/src/components/BaseInput.vue
 -->
-<script setup>
-import { ref, watchEffect } from 'vue';
+<script setup lang="ts">
+import { ref, watchEffect, defineEmits } from 'vue';
 const props = defineProps({
   modelValue: [String, Number],
   label: String,
   max: Number,
   min: Number,
 });
-defineEmits(['update:modelValue', 'input', 'blur']);
+const emit = defineEmits(['update:modelValue', 'input', 'blur'])
 
-function getValue(value) {
-  value = +value;
+function getValue(val: string | number | undefined) {
+  let value = val ? +val : 0;
   if (props.min !== void 0 && value < props.min) {
     value = props.min;
   } else if (props.max !== void 0 && value > props.max) {
     value = props.max;
   }
-  const newVal = Number.parseFloat(value);
-  return isNaN(newVal) ? '' : newVal
+  const newVal = Number.parseFloat(value.toString());
+  return isNaN(newVal) ? 0 : newVal
 }
 
 const currentValue = ref(0);
@@ -32,11 +32,17 @@ watchEffect(()=>{
   currentValue.value = getValue(props.modelValue)
 })
 
-function emitModelValue(emit, event) {
-  const value = getValue(event?.target?.value);
+
+function emitModelValue(event: Event) {
+  const value = getValue((event?.target as HTMLInputElement)?.value);
   emit('update:modelValue', value);
   emit('input', value);
   currentValue.value = value;
+}
+
+function emitBlurEvent(event: Event) {
+  const value = getValue((event?.target as HTMLInputElement)?.value);
+  emit('blur', value)
 }
 </script>
 
@@ -46,8 +52,8 @@ function emitModelValue(emit, event) {
       class="draw-input"
       v-model="currentValue"
       type="number"
-      @input="emitModelValue($emit, $event)"
-      @blur="$emit('blur', getValue($event.target.value))"
+      @input="emitModelValue"
+      @blur="emitBlurEvent"
     />
     <div v-if="label" class="draw-label">{{ label }}</div>
   </div>

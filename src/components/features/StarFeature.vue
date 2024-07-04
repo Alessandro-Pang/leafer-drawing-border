@@ -6,31 +6,26 @@
  * @Description: 星型
  * @FilePath: /vue-project/src/components/features/StarFeature.vue
 -->
-<script setup>
+<script setup lang="ts">
 import BaseInput from '../BaseInput.vue';
-import { reactive, watch  } from 'vue';
+import { reactive, watch } from 'vue';
+import {IUIInputData} from '@leafer-ui/interface';
+const props = defineProps<{
+  config: IUIInputData,
+  node: IUIInputData,
+}>();
 
-const props = defineProps({
-  leafer: Object,
-  node: Object,
-});
+const config = reactive({}) as IUIInputData;
 
-const config = reactive({});
-
-let timerId = null;
 // 简单的防抖功能，避免移动元素导致频繁刷新
-function setConfig(node) {
-  if (timerId) clearTimeout(timerId);
-  timerId = setTimeout(() => {
-    if (!node) return;
-    config.points = node.points;
-    config.innerRadius = node.innerRadius * 100;
-    clearTimeout(timerId);
-  }, 60);
+function setConfig(value: IUIInputData) {
+  if (!value) return;
+  config.points = value.points;
+  config.innerRadius = value.innerRadius * 100;
 }
-watch(props.node, (value) => setConfig(value));
+watch(props.config, (value) => setConfig(value));
 
-function handleChangeProp(prop, value) {
+function handleChangeProp(prop: string, value: string) {
   props.node.set({ [prop]: value });
 }
 </script>

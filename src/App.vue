@@ -3,33 +3,39 @@
  * @Date: 2023-07-04 11:24:27
  * @LastEditors: zi.yang
  * @LastEditTime: 2023-08-06 23:08:31
- * @Description: 
+ * @Description:
  * @FilePath: /vue-project/src/App.vue
 -->
 <script setup>
-import { svg } from './utils'
-import { NMessageProvider } from 'naive-ui'
+import {svg} from './utils'
+import {NMessageProvider} from 'naive-ui'
 import ItemPanel from './components/ItemPanel.vue';
 import DetailPanel from './components/DetailPanel.vue';
-import { nextTick, ref } from 'vue';
-import { createGraph } from './graph';
+import {nextTick, ref} from 'vue';
+import {createGraph} from './graph';
+import {EditorEvent} from "@leafer-in/editor";
 
-const leafer = ref(null);
+const showDetail = ref(false);
+const app = ref(null)
 const activeNode = ref(null);
 nextTick(() => {
-  leafer.value = createGraph('graph-container');
-  leafer.value.on('click', (event) => {
-    if(event.target.isLeafer) return 
-    activeNode.value = event.target;
-  });
+  app.value = createGraph('graph-container');
+  // graph.leafer.leafer.on('click', (event) => {
+  //   if (event.target.isApp) return
+  //   activeNode.value = event.target;
+  // });
+  app.value.editor.on(EditorEvent.SELECT, (event) => {
+    activeNode.value = event.editor.target
+  })
+  showDetail.value = false;
 });
 
-function handleOpenGitHub(){
+function handleOpenGitHub() {
   window.open('https://github.com/Alessandro-Pang/leafer-drawing-border')
 }
 
 function handleClickExportImage() {
-  leafer.value.export(`leafer-drawing-${Date.now()}.png`)
+  app.value.export(`leafer-drawing-${Date.now()}.png`)
 }
 </script>
 
@@ -37,7 +43,7 @@ function handleClickExportImage() {
   <n-message-provider>
     <header class="header" flex="main:justify">
       <div class="title">Leafer Drawing Board</div>
-      <div flex style="padding-top: 1rem"> 
+      <div flex style="padding-top: 1rem">
         <button class="button-small zy-mr-20" @click="handleClickExportImage">导出图片</button>
         <div class="github-icon" @click="handleOpenGitHub">
           <img :src="svg('github')" alt="svg">
@@ -46,13 +52,13 @@ function handleClickExportImage() {
     </header>
 
     <main class="main">
-      <item-panel :leafer="leafer"></item-panel>
+      <item-panel :app="app"></item-panel>
       <div id="graph-container"></div>
       <keep-alive>
-        <detail-panel v-if="activeNode?.innerId" :key="activeNode.innerId" :leafer="leafer" :node="activeNode"></detail-panel>
+        <detail-panel v-if="activeNode?.innerId" :key="activeNode.innerId" :app="app" :node="activeNode"></detail-panel>
       </keep-alive>
     </main>
-  </n-message-provider> 
+  </n-message-provider>
 </template>
 
 <style lang="scss" scoped>
@@ -84,7 +90,7 @@ function handleClickExportImage() {
     text-shadow: 0.5rem 0.4rem 0.2rem rgba(0, 0, 0, 0.4);
   }
 
-  .github-icon{
+  .github-icon {
     width: 4rem;
     height: 4rem;
     cursor: pointer;

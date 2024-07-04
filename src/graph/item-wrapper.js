@@ -8,16 +8,16 @@
  */
 import { Box, DragEvent, Ellipse, Line, PointerEvent, UI } from 'leafer-ui';
 
-import { uniqueId } from '../utils';
+import { uniqueId } from '@/utils';
 import { DEFAULT_OPTION } from './constants';
 import { findInsideNode, getWrapperBox } from './utils';
 
 /**
  * 自定义属性
- * @param {*} props 
- * @returns 
+ * @param {*} props
+ * @returns
  */
-function getDefaultCustomProps(props) {
+function getDefaultCustomProps(props = {}) {
   return Object.assign({}, {
     _isDrawGraph: true,
     _drawConfig: { type: 'BBox' },
@@ -25,112 +25,10 @@ function getDefaultCustomProps(props) {
   }, props)
 }
 
-// 拦截节点属性配置
-function interceptNodeConfig(config) {
-  return Object.assign({}, config, { x: 1, y: 1, draggable: false, })
-}
-
-/**
- * 
- * @param {*} wrapperBox 
- * @param {*} color 
- */
-function setWrapperBoxStyle(wrapperBox, color) {
-  if (wrapperBox && wrapperBox?._isDrawGraph) {
-    wrapperBox.stroke = color
-    wrapperBox.children?.forEach((child) => {
-      if (child._isDrawGraph) {
-        child.fill = color
-      }
-    })
-  }
-}
-
-/**
- * 包装器事件
- * @param {*} leafer 
- * @param {*} box 
- */
-function addWrapperEvent(leafer, box) {
-  leafer.on(PointerEvent.TAP, () => {
-    leafer.children.forEach((leaf) => {
-      leaf._status.isSelected = false;
-      setWrapperBoxStyle(leaf, 'transparent')
-    })
-  })
-  box.on(PointerEvent.TAP, (event) => {
-    event.stop()
-    if (!event.target) return;
-    const wrapperBox = getWrapperBox(event.target)
-    leafer.children.forEach((leaf) => {
-      leaf._status.isSelected = false;
-      setWrapperBoxStyle(leaf, 'transparent')
-    })
-    wrapperBox._status.isSelected = true;
-    setWrapperBoxStyle(wrapperBox, 'blue')
-  })
-}
-
-/**
- * TODO: 拖拽放大缩小功能开发
- * @param {*} leafer 
- * @param {*} box 
- */
-function createResizePoint(leafer, box) {
-  const pointPosition = [[0, 0], [1, 1], [0, 1], [1, 0]]
-
-  pointPosition.forEach(([x, y]) => {
-    const id = uniqueId(`box-resize`)
-    const anchor = new Ellipse({
-      id,
-      width: 12,
-      height: 12,
-      x: box.width * x - 6,
-      y: box.height * y - 6,
-      zIndex: 1,
-      draggable: false,
-      ...getDefaultCustomProps({ _drawConfig: { type: 'ResizePoint', pos: [x, y] }, }),
-    })
-    let dragPrevBox = {};
-    anchor.on(DragEvent.START, (event) => {
-      const item = event.target;
-      if (!item) return
-      const box = item.parent;
-      // box.draggable = false;
-      dragPrevBox.x = box.x
-      dragPrevBox.y = box.y
-      dragPrevBox.width = box.width
-      dragPrevBox.height = box.height
-    })
-
-    anchor.on(DragEvent.DRAG, (event) => {
-      const item = event.target;
-      if (!item) return
-      const box = item.parent;
-      const p1 = (dragPrevBox.x) / event.x;
-      const p2 = (dragPrevBox.y) / event.y;
-      box.width = Math.abs(dragPrevBox.width * p1) + 3;
-      box.height = Math.abs(dragPrevBox.height * p2) + 3;
-      box.children.forEach((child) => {
-        if (!child._isDrawGraph) {
-          child.width = box.width - 3;
-          child.height = box.height - 3;
-        }
-      })
-    })
-
-    anchor.on(DragEvent.END, () => {
-      // box.draggable = true;
-      dragPrevBox = {}
-    })
-    box.add(anchor)
-  })
-}
-
 /**
  * TODO: 连接锚点 功能开发
- * @param {*} leafer 
- * @param {*} box 
+ * @param {*} leafer
+ * @param {*} box
  */
 function createAnchorPoint(leafer, box) {
   const pointPosition = [[0, 0.5], [0.5, 0], [1, 0.5], [0.5, 1]]
@@ -199,32 +97,10 @@ function createAnchorPoint(leafer, box) {
   })
 }
 
-// 创建节点包装器
-function createItemWrapper(leafer, config) {
-  const wrapper = new Box({
-    id: uniqueId('wrapper-box'),
-    x: config.x + leafer.x * -1,
-    y: config.y + leafer.y * -1,
-    width: config.width + 2,
-    height: config.height + 2,
-    strokeWidth: 2,
-    dashPattern: [4, 4],
-    zIndex: 0,
-    draggable: config.draggable,
-    ...getDefaultCustomProps({ _drawConfig: { type: 'BBox' }, })
-  })
-
-  wrapper.add(UI.one(interceptNodeConfig(config)));
-  // createAnchorPoint(leafer, wrapper)
-  // createResizePoint(leafer, wrapper)
-  addWrapperEvent(leafer, wrapper)
-  leafer.add(wrapper);
-}
-
 // 创建节点
-function createNodeItem(leafer, options) {
-  const mergeOptions = Object.assign({}, DEFAULT_OPTION, options);
-  createItemWrapper(leafer, mergeOptions)
+function createNodeItem(app, options) {
+  const nodeOpt = {...DEFAULT_OPTION, ...options, ...getDefaultCustomProps()}
+  app.tree.add(UI.one(nodeOpt))
 }
 
 export { createNodeItem, getWrapperBox };

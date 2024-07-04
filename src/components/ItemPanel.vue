@@ -3,50 +3,47 @@
  * @Date: 2023-07-28 12:54:05
  * @LastEditors: zi.yang
  * @LastEditTime: 2023-08-05 19:55:50
- * @Description: 
+ * @Description:
  * @FilePath: /vue-project/src/components/ItemPanel.vue
 -->
 <script setup>
-import { ref } from 'vue';
-import { svg } from '../utils'
-import { NODE_SIZE } from '../graph/constants';
-import { createNodeItem } from '../graph/item-wrapper';
+import {nextTick, ref} from 'vue';
+import {svg} from '@/utils'
+import {NODE_SIZE} from '@/graph/constants';
+import {createNodeItem} from '@/graph/item-wrapper';
+import {DropEvent} from 'leafer-ui'
+
 const props = defineProps({
-  leafer: Object,
+  app: Object,
 });
 
 const items = ref([]);
 items.value = [
-  { label: '矩形', value: 'Rect' },
-  { label: '圆形', value: 'Ellipse' },
-  { label: '多边形', value: 'Polygon', sides: 6 },
-  { label: '星型', value: 'Star' },
+  {label: '矩形', value: 'Rect'},
+  {label: '圆形', value: 'Ellipse'},
+  {label: '多边形', value: 'Polygon', sides: 6},
+  {label: '星型', value: 'Star'},
 ];
 
 function handleDragEndItem(event, item) {
-  const zoom = props.leafer.zoomLayer.scaleX;
-  let x = event.x - NODE_SIZE.WIDTH / 2;
-  let y = event.y - NODE_SIZE.HEIGHT / 2 - 60;
-  if (zoom < 1) {
-    x += event.x * (1 - zoom);
-    y += event.y * (1 - zoom) - 60 * (1 - zoom);
-  } else if (zoom > 1) {
-    x -= event.x * (1 / zoom);
-    y -= event.y * (1 / zoom) - 60 * (1 / zoom);
-  }
-  createNodeItem(props.leafer, { tag: item.value, x, y, ...item });
+  // const zoom = props.app.zoomLayer.scale;
+  const appX = props.app.tree.x * -1
+  const appY = props.app.tree.y * -1
+  const x = event.x - NODE_SIZE.WIDTH / 2 + appY;
+  const y = event.y - 60 - NODE_SIZE.HEIGHT / 2 + appX;
+  createNodeItem(props.app, {tag: item.value, x, y, ...item});
 }
 </script>
 
 <template>
   <ul class="item-panel--wrapper">
     <li
-      draggable="true"
-      v-for="(item, index) of items"
-      :key="index"
-      @dragend="handleDragEndItem($event, item)"
+        draggable="true"
+        v-for="(item, index) of items"
+        :key="index"
+        @dragend="handleDragEndItem($event, item)"
     >
-      <img height="30" width="30" :src="svg(item.value)" :alt="item.label" />
+      <img height="30" width="30" :src="svg(item.value)" :alt="item.label"/>
       <div>{{ item.label }}</div>
     </li>
   </ul>
